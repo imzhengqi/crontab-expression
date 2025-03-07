@@ -1,0 +1,19 @@
+{
+    "name": "zhengqi/crontab-expression",
+    "description": "crontab日期解析器，支持秒级",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "zhengqi\\cron\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "zhengqi"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    }
+}
