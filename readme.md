@@ -3,18 +3,12 @@
 ```
 <?php
 
-$cronRule = "*/10 * * * * *";
+$expression = '0 0 2 * 10 *';
 
-// 检测表达式是否正确
-CronExpression::isValid($cronRule);
+$isValid = CronExpression::isValidExpression($expression);
 
-// 初始化
-$cron = CronExpression::create($cronRule);
+$cron = new CronExpression($expression);
 
-// 下次执行时间
-$next = $cron->getNextRunDate();
-
-// 指定时间的 下次执行时间
-$next = $cron->getNextRunDate(new DateTime("2025-03-07 22:00:00"));
+$cron->getNextRunDate()->format('Y-m-d H:i:s');
 
 ```
