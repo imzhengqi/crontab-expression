@@ -462,7 +462,7 @@ class CronExpression extends \Cron\CronExpression
 
         $currentDate->setTimezone(new DateTimeZone($timeZone));
         // Workaround for setTime causing an offset change: https://bugs.php.net/bug.php?id=81074
-        $currentDate = DateTime::createFromFormat("!Y-m-d H:iO", $currentDate->format("Y-m-d H:iP"), $currentDate->getTimezone());
+        $currentDate = DateTime::createFromFormat("!Y-m-d H:i:sO", $currentDate->format("Y-m-d H:i:sP"), $currentDate->getTimezone());
         if ($currentDate === false) {
             throw new \RuntimeException('Unable to create date from format');
         }

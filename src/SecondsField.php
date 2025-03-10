@@ -51,11 +51,14 @@ class SecondsField extends AbstractField
         }
 
         $currentSecond = (int)$date->format('s'); // 获取当前秒数
-        // 将表达式拆分为多个部分，并获取每个部分对应的秒数范围
-        $seconds = array_unique(array_merge(...array_map(function ($part) {
-            return $this->getRangeForExpression($part, $this->rangeEnd);
-        }, explode(',', $parts))));
-        sort($seconds); // 对秒数进行排序
+
+        $parts = str_contains($parts, ',') ? explode(',', $parts) : [$parts];
+
+        $seconds = [];
+        foreach ($parts as $part) {
+            $seconds = array_merge($seconds, $this->getRangeForExpression($part, 59));
+        }
+        sort($seconds);
 
         if (!$invert) {
             // 正向递增
