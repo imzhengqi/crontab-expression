@@ -190,14 +190,14 @@ class CronExpression extends \Cron\CronExpression
             );
         }
 
-        $notEnoughParts = \count($split) < 5;
+        $notEnoughParts = \count($split) < 6;
 
-        $questionMarkInInvalidPart = array_key_exists(0, $split) && $split[0] === '?'
-            || array_key_exists(1, $split) && $split[1] === '?'
-            || array_key_exists(3, $split) && $split[3] === '?';
+        $questionMarkInInvalidPart = array_key_exists(1, $split) && $split[1] === '?'
+            || array_key_exists(2, $split) && $split[2] === '?'
+            || array_key_exists(4, $split) && $split[4] === '?';
 
-        $tooManyQuestionMarks = array_key_exists(2, $split) && $split[2] === '?'
-            && array_key_exists(4, $split) && $split[4] === '?';
+        $tooManyQuestionMarks = array_key_exists(3, $split) && $split[3] === '?'
+            && array_key_exists(5, $split) && $split[5] === '?';
 
         if ($notEnoughParts || $questionMarkInInvalidPart || $tooManyQuestionMarks) {
             throw new InvalidArgumentException(
@@ -418,7 +418,7 @@ class CronExpression extends \Cron\CronExpression
         $currentTime->setTimezone(new DateTimeZone($timeZone));
 
         // drop the seconds to 0
-        $currentTime->setTime((int) $currentTime->format('H'), (int) $currentTime->format('i'), 0);
+//        $currentTime->setTime((int) $currentTime->format('H'), (int) $currentTime->format('i'), 0);
 
         try {
             return $this->getNextRunDate($currentTime, 0, true)->getTimestamp() === $currentTime->getTimestamp();
@@ -462,7 +462,7 @@ class CronExpression extends \Cron\CronExpression
 
         $currentDate->setTimezone(new DateTimeZone($timeZone));
         // Workaround for setTime causing an offset change: https://bugs.php.net/bug.php?id=81074
-        $currentDate = DateTime::createFromFormat("!Y-m-d H:iO", $currentDate->format("Y-m-d H:iP"), $currentDate->getTimezone());
+        $currentDate = DateTime::createFromFormat("!Y-m-d H:i:sO", $currentDate->format("Y-m-d H:i:sP"), $currentDate->getTimezone());
         if ($currentDate === false) {
             throw new \RuntimeException('Unable to create date from format');
         }
@@ -483,8 +483,21 @@ class CronExpression extends \Cron\CronExpression
         }
 
         if (isset($parts[self::DAY]) && isset($parts[self::WEEKDAY])) {
-            $domExpression = sprintf('%s %s %s %s *', $this->getExpression(0), $this->getExpression(1), $this->getExpression(2), $this->getExpression(3));
-            $dowExpression = sprintf('%s %s * %s %s', $this->getExpression(0), $this->getExpression(1), $this->getExpression(3), $this->getExpression(4));
+            $domExpression = sprintf(
+                '%s %s %s %s %s *',
+                $this->getExpression(0),
+                $this->getExpression(1),
+                $this->getExpression(2),
+                $this->getExpression(3),
+            );
+            $dowExpression = sprintf(
+                '%s %s %s * %s %s',
+                $this->getExpression(0),
+                $this->getExpression(1),
+                $this->getExpression(2),
+                $this->getExpression(4),
+                $this->getExpression(5)
+            );
 
             $domExpression = new self($domExpression);
             $dowExpression = new self($dowExpression);
@@ -540,7 +553,7 @@ class CronExpression extends \Cron\CronExpression
 
             // Skip this match if needed
             if ((!$allowCurrentDate && $nextRun == $currentDate) || --$nth > -1) {
-                $this->fieldFactory->getField(self::MINUTE)->increment($nextRun, $invert, $parts[self::MINUTE] ?? null);
+                $this->fieldFactory->getField(self::SECOND)->increment($nextRun, $invert, $parts[self::SECOND] ?? null);
                 continue;
             }
 
